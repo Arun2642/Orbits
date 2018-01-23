@@ -13,67 +13,8 @@
 var time = 0
 
 var myVar = setInterval(renderWithTime, 1000);
-
-function renderWithTime(){
-    console.log("rendering")
-    time += .1
-    var sun = {
-        x: [0],
-        y: [0],
-        z: [0],
-        mode: 'markers',
-        marker: {
-            color: 'rgb(255, 255, 0)',
-            size: 24,
-            symbol: 'circle',
-            opacity: 1,
-            line: {
-            color: 'rgb(204, 204, 204)',
-            width: 1},
-            opacity: 0.8},
-        type: 'scatter3d'
-    };
-    var earth = {
-        x: [Math.sin(time)],
-        y: [Math.cos(time)],
-        z: [0],
-        mode: 'markers',
-        marker: {
-            color: 'rgb(22, 234, 132)',
-            size: 8,
-            symbol: 'circle',
-            line: {
-            color: 'rgb(204, 204, 204)',
-            width: 1},
-            opacity: 0.8},
-        type: 'scatter3d'
-    };
-    var boundingPoints = {
-        x: [5,5,5,5,-5,-5,-5,-5],
-        y: [5,5,-5,-5,5,5,-5,-5],
-        z: [5,-5,5,-5,5,-5,5,-5],
-        mode: 'markers',
-        marker: {
-            color: 'rgb(0,0,0)',
-            size:1,
-            symbol: 'circle',
-            line:{
-                color: 'rgb(255,255,255)',
-                width: 0},
-                opacity: 0},
-        type: 'scatter3d'
-    };
-    var data = [sun, earth, boundingPoints];
-    var layout = {margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0
-        }};
-    TESTER = document.getElementById('tester');
-}
         
-function renderInit(){
+function renderWithTime(){
     console.log("rendering")
     time += .1
     var sun = {
