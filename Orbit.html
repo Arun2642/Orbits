@@ -10,8 +10,13 @@
 
 <script>
 
-var time = 0
-
+var t = 0;
+var a = 12;
+var b = 24;
+var c = 36;
+var j = 0;
+var k = 0;
+var l = 0;
 var sun = {
     x: [0],
     y: [0],
@@ -29,9 +34,9 @@ var sun = {
     type: 'scatter3d'
 };
 var earth = {
-    x: [Math.sin(time)],
-    y: [Math.cos(time)],
-    z: [0],
+    x: [a*Math.cos(t)],//[((a*Math.cos(k)*Math.cos(l)*Math.cos(t))+c*(Math.sin(j)*Math.sin(l)-Math.cos(j)*Math.cos(l)*Math.sin(k))+b*(Math.cos(l)*Math.sin(j)*Math.sin(k)+Math.cos(j)*Math.sin(l)))*Math.sin(t)],
+    y: [b*Math.sin(t)],//[(-a*Math.cos(k)*Math.cos(t)*Math.sin(l)+c*(Math.cos(l)*Math.sin(j)+Math.cos(j)*Math.sin(k)*Math.sin(l))+b*(Math.cos(j)*Math.cos(l)-Math.sin(j)*Math.sin(k)*Math.sin(l)))*Math.sin(t)],
+    z: [c],//*Math.cos(j)*Math.cos(k)-b*Math.sin(j)*Math.sin(t)*Math.cos(k)+a*Math.cos(t)*Math.sin(k)],
     mode: 'markers',
     marker: {
         color: 'rgb(22, 234, 132)',
@@ -43,10 +48,11 @@ var earth = {
         opacity: 0.8},
     type: 'scatter3d'
 };
+var bound = 30;
 var boundingPoints = {
-    x: [5,5,5,5,-5,-5,-5,-5],
-    y: [5,5,-5,-5,5,5,-5,-5],
-    z: [5,-5,5,-5,5,-5,5,-5],
+    x: [bound,bound,bound,bound,-bound,-bound,-bound,-bound],
+    y: [bound,bound,-bound,-bound,bound,bound,-bound,-bound],
+    z: [bound,-bound,bound,-bound,bound,-bound,bound,-bound],
     mode: 'markers',
     marker: {
         color: 'rgb(0,0,0)',
@@ -67,31 +73,15 @@ var layout = {margin: {
     }};
 TESTER = document.getElementById('tester');
 Plotly.plot(TESTER, data, layout);
-var myVar = setInterval(renderWithTime, 1000);
+// var myVar = setInterval(renderWithTime, 1000);
 
 function renderWithTime(){
     console.log("rendering")
-    time += 1
-    var sun = {
-        x: [0],
-        y: [0],
-        z: [0],
-        mode: 'markers',
-        marker: {
-            color: 'rgb(255, 255, 0)',
-            size: 24,
-            symbol: 'circle',
-            opacity: 1,
-            line: {
-            color: 'rgb(204, 204, 204)',
-            width: 1},
-            opacity: 0.8},
-        type: 'scatter3d'
-    };
+    t += .1;
     var earth = {
-        x: [Math.sin(time)],
-        y: [Math.cos(time)],
-        z: [0],
+      x: [((a*Math.cos(k)*Math.cos(l)*Math.cos(t))+c*(Math.sin(j)*Math.sin(l)-Math.cos(j)*Math.cos(l)*Math.sin(k))+b*(Math.cos(l)*Math.sin(j)*Math.sin(k)+Math.cos(j)*Math.sin(l)))*Math.sin(t)],
+      y: [(-a*Math.cos(k)*Math.cos(t)*Math.sin(l)+c*(Math.cos(l)*Math.sin(j)+Math.cos(j)*Math.sin(k)*Math.sin(l))+b*(Math.cos(j)*Math.cos(l)-Math.sin(j)*Math.sin(k)*Math.sin(l)))*Math.sin(t)],
+      z: [c*Math.cos(j)*Math.cos(k)-b*Math.sin(j)*Math.sin(t)*Math.cos(k)+a*Math.cos(t)*Math.sin(k)],
         mode: 'markers',
         marker: {
             color: 'rgb(22, 234, 132)',
@@ -103,20 +93,23 @@ function renderWithTime(){
             opacity: 0.8},
         type: 'scatter3d'
     };
-    var data = [sun, earth];
+    var data = [earth];
     var layout = {
     };
     var transitions = {
-    transition: {
-      duration: 500,
-      easing: 'cubic-in-out'
-    }, frame:{
-      redraw:false
+      transition: {
+        duration: 500,
+        easing: 'cubic-in-out'
+      },
+      frame: {
+        redraw:false
+      }
     }
-  }
-    Plotly.animate(TESTER, {data, layout}, transitions);
+    Plotly.plot(TESTER, {data, layout}, transitions);
 }
-
+for (var i = 0; i<100; i++){
+  renderWithTime();
+}
 </script>
 
 </body>
