@@ -46,13 +46,13 @@ article {
 </header>
   <nav>
   <ul>
-  <li>Days per tick:<input type="number" style="width:300px;" id="time" value="25" placeholder="Select the number of days per tick" /></li>
-  <li>Eccentricity:<input type="number" style="width:300px;" id="eccentricity" value="2.0" placeholder="Select the eccentricity of the orbit" /></li>
-  <li>Period (days):<input type="number" style="width:300px;" id="period" value="1679" placeholder="Select the period of the orbit" /></li>
-  <li>Radius (au):<input type="number" style="width:300px;" id="radius" value="3" placeholder="Select the period of the orbit" /></li>
-  <li>Inclination (rotation in x axis) (degrees):<input type="number" style="width:300px;" id="inclination1" value="10" placeholder="Select the period of the orbit" /></li>
-  <li>Rotation (z axis) (degrees):<input type="number" style="width:300px;" id="inclination2" value="30" placeholder="Select the period of the orbit" /></li>
-  <li>Rotation (y axis) (degrees):<input type="number" style="width:300px;" id="inclination3" value="20" placeholder="Select the period of the orbit" /></li>
+  <li>Days per tick:<input type="number" style="width:300px;" id="time" value="10" placeholder="Select the number of days per tick" /></li>
+  <li>Semi-major:<input type="number" style="width:300px;" id="major" value="2.587" placeholder="Select the eccentricity of the orbit" /></li>
+  <li>Period (days):<input type="number" style="width:300px;" id="period" value="1511.76" placeholder="Select the period of the orbit" /></li>
+  <li>Semi-minor (au):<input type="number" style="width:300px;" id="minor" value="2.4169" placeholder="Select the period of the orbit" /></li>
+  <li>Longitude of Ascending Node (degrees):<input type="number" style="width:300px;" id="inclination1" value="24.37907" placeholder="Select the period of the orbit" /></li>
+  <li>Inclination (degrees):<input type="number" style="width:300px;" id="inclination2" value="266.81005" placeholder="Select the period of the orbit" /></li>
+  <li>Argument of Periapsis (degrees):<input type="number" style="width:300px;" id="inclination3" value="112.22464s" placeholder="Select the period of the orbit" /></li>
   <li>Unit to AU ratio:<input type="number" style="width:300px;" id="astro" value="5" placeholder="Select the period of the orbit" /></li>
   </ul>
   </nav>
@@ -64,15 +64,25 @@ article {
 <script>
 
 var t = 0;
-var a = 5*document.getElementById("eccentricity").value*document.getElementById("radius").value;
-var b = 5*document.getElementById("radius").value;
+var a = 5*document.getElementById("major").value;
+var b = 5*document.getElementById("minor").value;
 var c = Math.sqrt(Math.pow(a,2)-Math.pow(b,2));
 var j = Math.PI*document.getElementById("inclination1").value/180;
 var k = Math.PI*document.getElementById("inclination2").value/180;
 var l = Math.PI*document.getElementById("inclination3").value/180;
+var tp = 0;
+var ap = 5;
+var bp = 5;
+var cp = Math.sqrt(Math.pow(ap,2)-Math.pow(bp,2));
+var jp = 0;
+var kp = 0;
+var lp = 0;
 var updateTick = 0;
-var timeStep = document.getElementById("time").value
-var period = document.getElementById("period").value
+// var timeStep = document.getElementById("time").value
+// var period = document.getElementById("period").value
+var timeStep = 5
+var period = 2000
+var periodp = 365
 var sun = {
     x: [0],
     y: [0],
@@ -90,9 +100,9 @@ var sun = {
     type: 'scatter3d'
 };
 var ceres = {
-  x: [Math.cos(k)*Math.cos(l)*(c + a*Math.cos(t)) + b*(Math.cos(l)*Math.sin(j)*Math.sin(k) + Math.cos(j)*Math.sin(l))*Math.sin(t)],
-  y: [b*(Math.cos(j)*Math.cos(l) - Math.sin(j)*Math.sin(k)*Math.sin(l))*Math.sin(t)-Math.cos(k)*(c + a*Math.cos(t))*Math.sin(l)],
-  z: [(c +a*Math.cos(t))*Math.sin(k) - b*Math.cos(k)*Math.sin(j)*Math.sin(t)],
+  x: [a*Math.cos(t)*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) - Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
+  y: [a*Math.cos(t)*(Math.cos(k)*Math.cos(l)*Math.sin(j) + Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
+  z: [a*Math.cos(t)*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
     mode: 'markers',
     marker: {
         color: 'rgb(204,204,204)',
@@ -105,9 +115,9 @@ var ceres = {
     type: 'scatter3d'
 };
 var earth = {
-  x: [10 * Math.cos(t)],
-  y: [10 * Math.sin(t)],
-  z: [0],
+  x: [ap*Math.cos(tp)*(Math.cos(jp)*Math.cos(lp) - Math.cos(kp)*Math.sin(jp)*Math.sin(lp)) + bp*(-Math.cos(lp)*Math.sin(jp) - Math.cos(jp)*Math.cos(kp)*Math.sin(lp))*Math.sin(tp)],
+  y: [ap*Math.cos(tp)*(Math.cos(kp)*Math.cos(lp)*Math.sin(jp) + Math.cos(jp)*Math.sin(lp)) + bp*(Math.cos(jp)*Math.cos(kp)*Math.cos(lp) - Math.sin(jp)*Math.sin(lp))*Math.sin(tp)],
+  z: [ap*Math.cos(tp)*Math.sin(jp)*Math.sin(kp) + bp*Math.cos(jp)*Math.sin(tp)*Math.sin(kp)],
     mode: 'markers',
     marker: {
         color: 'rgb(22, 234, 132)',
@@ -144,6 +154,7 @@ var layout = {margin: {
     t: 0
     }, showlegend: false };
 t += 2*Math.PI*a*b*timeStep/(period*(Math.pow(ceres.x[0],2)+Math.pow(ceres.y[0],2)+Math.pow(ceres.z[0],2)));
+tp += 2*Math.PI*ap*bp*timeStep/(periodp*(Math.pow(earth.x[0],2)+Math.pow(earth.y[0],2)+Math.pow(earth.z[0],2)));
 TESTER = document.getElementById('tester');
 Plotly.plot(TESTER, data, layout);
 
@@ -165,9 +176,9 @@ function renderWithTime(){
   period = document.getElementById("period").value */
     console.log("rendering")
     var ceres = {
-      x: [Math.cos(k)*Math.cos(l)*(c + a*Math.cos(t)) + b*(Math.cos(l)*Math.sin(j)*Math.sin(k) + Math.cos(j)*Math.sin(l))*Math.sin(t)],
-      y: [b*(Math.cos(j)*Math.cos(l) - Math.sin(j)*Math.sin(k)*Math.sin(l))*Math.sin(t)-Math.cos(k)*(c + a*Math.cos(t))*Math.sin(l)],
-      z: [(c +a*Math.cos(t))*Math.sin(k) - b*Math.cos(k)*Math.sin(j)*Math.sin(t)],
+      x: [a*Math.cos(t)*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) - Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
+      y: [a*Math.cos(t)*(Math.cos(k)*Math.cos(l)*Math.sin(j) + Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
+      z: [a*Math.cos(t)*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
         mode: 'markers',
         marker: {
             color: 'rgb(204,204,204)',
@@ -180,9 +191,9 @@ function renderWithTime(){
         type: 'scatter3d'
     };
     var earth = {
-      x: [10 * Math.cos(t*document.getElementById("period").value/365)],
-      y: [10 * Math.sin(t*document.getElementById("period").value/365)],
-      z: [0],
+      x: [ap*Math.cos(tp)*(Math.cos(jp)*Math.cos(lp) - Math.cos(kp)*Math.sin(jp)*Math.sin(lp)) + bp*(-Math.cos(lp)*Math.sin(jp) - Math.cos(jp)*Math.cos(kp)*Math.sin(lp))*Math.sin(tp)],
+      y: [ap*Math.cos(tp)*(Math.cos(kp)*Math.cos(lp)*Math.sin(jp) + Math.cos(jp)*Math.sin(lp)) + bp*(Math.cos(jp)*Math.cos(kp)*Math.cos(lp) - Math.sin(jp)*Math.sin(lp))*Math.sin(tp)],
+      z: [ap*Math.cos(tp)*Math.sin(jp)*Math.sin(kp) + bp*Math.cos(jp)*Math.sin(tp)*Math.sin(kp)],
         mode: 'markers',
         marker: {
             color: 'rgb(22, 234, 132)',
@@ -195,6 +206,7 @@ function renderWithTime(){
         type: 'scatter3d'
     };
     t += 2*Math.PI*a*b*timeStep/(period*((ceres.x[0]*ceres.x[0])+(ceres.y[0]*ceres.y[0])+(ceres.z[0]*ceres.z[0])));
+    tp += 2*Math.PI*ap*bp*timeStep/(periodp*(Math.pow(earth.x[0],2)+Math.pow(earth.y[0],2)+Math.pow(earth.z[0],2)));
     if (updateTick == document.getElementById("astro").value){
       updateTick = 0;
       var data = [ceres, earth];
