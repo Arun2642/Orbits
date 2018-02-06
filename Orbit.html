@@ -3,22 +3,30 @@
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-<p>Hello</p>
+  <p>Days per tick:</p><input type="number" style="width:300px;" id="time" value="25" placeholder="Select the number of days per tick" />
+  <p>Eccentricity:</p><input type="number" style="width:300px;" id="eccentricity" value="1.3" placeholder="Select the eccentricity of the orbit" />
+  <p>Period (days):</p><input type="number" style="width:300px;" id="period" value="1679" placeholder="Select the period of the orbit" />
+  <p>Radius (au):</p><input type="number" style="width:300px;" id="radius" value="3" placeholder="Select the period of the orbit" />
+  <p>Inclination (rotation in x axis) (degrees):</p><input type="number" style="width:300px;" id="inclination1" value="10" placeholder="Select the period of the orbit" />
+  <p>Rotation (z axis) (degrees):</p><input type="number" style="width:300px;" id="inclination2" value="30" placeholder="Select the period of the orbit" />
+  <p>Rotation (y axis) (degrees):</p><input type="number" style="width:300px;" id="inclination3" value="20" placeholder="Select the period of the orbit" />
+  <p>Unit to AU ratio:</p><input type="number" style="width:300px;" id="astro" value="5" placeholder="Select the period of the orbit" />
+<div id="tester" style="width:1200px;height:500px;"></div>
 
-<button onclick="renderWithTime()">Itterate</button>
-<div id="tester" style="width:1200px;height:500px;">Namaste</div>
+
 
 <script>
 
 var t = 0;
-var a = 36;
-var b = 36;
+var a = 5*document.getElementById("eccentricity").value*document.getElementById("radius").value;
+var b = 5*document.getElementById("radius").value;
 var c = Math.sqrt(Math.pow(a,2)-Math.pow(b,2));
-var j = Math.PI/3;
-var k = Math.PI/4;
-var l = Math.PI/2;
-var timeStep = 1
-var period = 50
+var j = Math.PI*document.getElementById("inclination1").value/180;
+var k = Math.PI*document.getElementById("inclination2").value/180;
+var l = Math.PI*document.getElementById("inclination3").value/180;
+var updateTick = 0;
+var timeStep = document.getElementById("time").value
+var period = document.getElementById("period").value
 var sun = {
     x: [0],
     y: [0],
@@ -35,10 +43,25 @@ var sun = {
         opacity: 0.8},
     type: 'scatter3d'
 };
-var earth = {
+var ceres = {
   x: [Math.cos(k)*Math.cos(l)*(c + a*Math.cos(t)) + b*(Math.cos(l)*Math.sin(j)*Math.sin(k) + Math.cos(j)*Math.sin(l))*Math.sin(t)],
   y: [b*(Math.cos(j)*Math.cos(l) - Math.sin(j)*Math.sin(k)*Math.sin(l))*Math.sin(t)-Math.cos(k)*(c + a*Math.cos(t))*Math.sin(l)],
   z: [(c +a*Math.cos(t))*Math.sin(k) - b*Math.cos(k)*Math.sin(j)*Math.sin(t)],
+    mode: 'markers',
+    marker: {
+        color: 'rgb(204,204,204)',
+        size: 8,
+        symbol: 'circle',
+        line: {
+        color: 'rgb(204, 204, 204)',
+        width: 1},
+        opacity: 0.8},
+    type: 'scatter3d'
+};
+var earth = {
+  x: [10 * Math.cos(t)],
+  y: [10 * Math.sin(t)],
+  z: [0],
     mode: 'markers',
     marker: {
         color: 'rgb(22, 234, 132)',
@@ -50,6 +73,7 @@ var earth = {
         opacity: 0.8},
     type: 'scatter3d'
 };
+
 var bound = 30;
 var boundingPoints = {
     x: [bound,bound,bound,bound,-bound,-bound,-bound,-bound],
@@ -66,14 +90,14 @@ var boundingPoints = {
             opacity: 0},
     type: 'scatter3d'
 };
-var data = [sun, earth, boundingPoints];
+var data = [sun, ceres, earth, boundingPoints];
 var layout = {margin: {
     l: 0,
     r: 0,
     b: 0,
     t: 0
     }};
-t += 2*Math.PI*a*b*timeStep/(period*(Math.pow(earth.x[0],2)+Math.pow(earth.y[0],2)+Math.pow(earth.z[0],2)));
+t += 2*Math.PI*a*b*timeStep/(period*(Math.pow(ceres.x[0],2)+Math.pow(ceres.y[0],2)+Math.pow(ceres.z[0],2)));
 TESTER = document.getElementById('tester');
 Plotly.plot(TESTER, data, layout);
 
@@ -84,11 +108,35 @@ function renderWithTime(){
   // x: [a*Math.cos(t)+c],
   // y: [b*Math.sin(t)],
   // z: [0],
+  /* t = 0;
+  a = 5*document.getElementById("eccentricity").value*document.getElementById("radius").value;
+  b = 5*document.getElementById("radius").value;
+  c = Math.sqrt(Math.pow(a,2)-Math.pow(b,2));
+  j = Math.PI*document.getElementById("inclination1").value/180;
+  k = Math.PI*document.getElementById("inclination2").value/180;
+  l = Math.PI*document.getElementById("inclination3").value/180;
+  timeStep = document.getElementById("time").value
+  period = document.getElementById("period").value */
     console.log("rendering")
-    var earth = {
+    var ceres = {
       x: [Math.cos(k)*Math.cos(l)*(c + a*Math.cos(t)) + b*(Math.cos(l)*Math.sin(j)*Math.sin(k) + Math.cos(j)*Math.sin(l))*Math.sin(t)],
       y: [b*(Math.cos(j)*Math.cos(l) - Math.sin(j)*Math.sin(k)*Math.sin(l))*Math.sin(t)-Math.cos(k)*(c + a*Math.cos(t))*Math.sin(l)],
       z: [(c +a*Math.cos(t))*Math.sin(k) - b*Math.cos(k)*Math.sin(j)*Math.sin(t)],
+        mode: 'markers',
+        marker: {
+            color: 'rgb(204,204,204)',
+            size: 8,
+            symbol: 'circle',
+            line: {
+            color: 'rgb(204, 204, 204)',
+            width: 1},
+            opacity: 0.8},
+        type: 'scatter3d'
+    };
+    var earth = {
+      x: [10 * Math.cos(t*document.getElementById("period").value/365)],
+      y: [10 * Math.sin(t*document.getElementById("period").value/365)],
+      z: [0],
         mode: 'markers',
         marker: {
             color: 'rgb(22, 234, 132)',
@@ -100,7 +148,8 @@ function renderWithTime(){
             opacity: 0.8},
         type: 'scatter3d'
     };
-    var data = [earth];
+    t += 2*Math.PI*a*b*timeStep/(period*((ceres.x[0]*ceres.x[0])+(ceres.y[0]*ceres.y[0])+(ceres.z[0]*ceres.z[0])));
+    var data = [ceres, earth];
     var layout = {
     };
     var transitions = {
@@ -112,9 +161,8 @@ function renderWithTime(){
         redraw:false
       }
     }
-    t += 2*Math.PI*a*b*timeStep/(period*(Math.pow(earth.x[0],2)+Math.pow(earth.y[0],2)+Math.pow(earth.z[0],2)));
     Plotly.plot(TESTER, {data, layout}, transitions);
-}
+  }
 var myVar = setInterval(renderWithTime, 1000);
 </script>
 
