@@ -10,7 +10,7 @@ div.container {
 header, footer {
     padding: 1em;
     color: white;
-    background-color: black;
+    background-color: #D61DBE;
     clear: left;
     text-align: center;
 }
@@ -56,6 +56,7 @@ article {
   <li>Unit to AU ratio:<input type="number" style="width:300px;" id="astro" value="5" placeholder="Select the period of the orbit" /></li>
   </ul>
   </nav>
+  <p id="dtdt"></p>
   <article>
   <div id="tester" style="width:1200px;height:500px;"></div>
   </article>
@@ -100,9 +101,9 @@ var sun = {
     type: 'scatter3d'
 };
 var ceres = {
-  x: [a*Math.cos(t)*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) - Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
-  y: [a*Math.cos(t)*(Math.cos(k)*Math.cos(l)*Math.sin(j) + Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
-  z: [a*Math.cos(t)*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
+  x: [(c + a*Math.cos(t))*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) -Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
+  y: [(c + a*Math.cos(t))*(Math.cos(k)*Math.cos(l)*Math.sin(j) +Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
+  z: [(c + a*Math.cos(t))*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
     mode: 'markers',
     marker: {
         color: 'rgb(204,204,204)',
@@ -176,9 +177,9 @@ function renderWithTime(){
   period = document.getElementById("period").value */
     console.log("rendering")
     var ceres = {
-      x: [a*Math.cos(t)*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) - Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
-      y: [a*Math.cos(t)*(Math.cos(k)*Math.cos(l)*Math.sin(j) + Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
-      z: [a*Math.cos(t)*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
+      x: [(c + a*Math.cos(t))*(Math.cos(j)*Math.cos(l) - Math.cos(k)*Math.sin(j)*Math.sin(l)) + b*(-Math.cos(l)*Math.sin(j) -Math.cos(j)*Math.cos(k)*Math.sin(l))*Math.sin(t)],
+      y: [(c + a*Math.cos(t))*(Math.cos(k)*Math.cos(l)*Math.sin(j) +Math.cos(j)*Math.sin(l)) + b*(Math.cos(j)*Math.cos(k)*Math.cos(l) - Math.sin(j)*Math.sin(l))*Math.sin(t)],
+      z: [(c + a*Math.cos(t))*Math.sin(j)*Math.sin(k) + b*Math.cos(j)*Math.sin(t)*Math.sin(k)],
         mode: 'markers',
         marker: {
             color: 'rgb(204,204,204)',
@@ -227,7 +228,9 @@ function renderWithTime(){
     else{
       updateTick += 1;
     }
+    document.getElementById("dtdt").innerHTML = "Angular Velocity: " + 2*Math.PI*a*b/(period*((ceres.x[0]*ceres.x[0])+(ceres.y[0]*ceres.y[0])+(ceres.z[0]*ceres.z[0])))
 }
+
 var myVar = setInterval(renderWithTime, 1000/document.getElementById("astro").value);
 </script>
 
